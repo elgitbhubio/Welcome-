@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Upload → Welcome Email Scheduler (Concept Mock‑up)</title>
+  <style>
+    :root { --bg:#0b0d10; --card:#14181f; --muted:#9aa4b2; --text:#e7edf3; --accent:#4aa4ff; --ok:#18c37e; --warn:#ffb020; --danger:#ff5f5f; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color:var(--text); background:linear-gradient(180deg,#0b0d10 0%, #0e1218 100%); }
+    .banner { background:linear-gradient(90deg,#1f2a37,#16202c); color:#c7d2fe; padding:10px 16px; font-size:12px; letter-spacing:.3px; text-transform:uppercase; border-bottom:1px solid #243041; text-align:center; }
+    .wrap { max-width:1000px; margin:40px auto; padding:0 20px; }
+    .card { background:var(--card); border:1px solid #263244; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.35); }
+    .hdr { display:flex; align-items:center; gap:12px; padding:18px 20px; border-bottom:1px solid #223042; }
+    .hdr h1 { font-size:18px; margin:0; font-weight:700; }
+    .sub { color:var(--muted); font-size:13px; margin-left:auto; }
+    .body { padding:20px; display:grid; grid-template-columns: 1.2fr .8fr; gap:18px; }
+    .panel { background:#0f141b; border:1px solid #1e2a3a; border-radius:12px; padding:16px; }
+    .panel h2 { margin:0 0 10px; font-size:15px; }
+    .muted { color:var(--muted); font-size:13px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .row { display:flex; align-items:center; gap:10px; margin:10px 0; }
+    label { font-size:14px; }
+    input[type="file"], input[type="text"], input[type="email"], input[type="number"], input[type="time"], input[type="date"] { width:100%; padding:10px 12px; background:#0b1016; color:var(--text); border:1px solid #243244; border-radius:10px; outline:none; }
+    input[type="checkbox"] { width:16px; height:16px; accent-color: var(--accent); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:8px; background:var(--accent); color:#061320; border:none; padding:12px 16px; border-radius:12px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(74,164,255,.25); }
+    .btn.secondary { background:#1b2636; color:var(--text); border:1px solid #2b3a4f; box-shadow:none; }
+    .btn.ghost { background:transparent; color:var(--muted); border:1px dashed #324258; }
+    .btn[disabled] { opacity:.5; cursor:not-allowed; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; font-size:12px; border:1px solid #233246; color:#c7d2fe; background:#121a25; }
+    .divider { height:1px; background:#1f2b3a; margin:16px 0; }
+    .list { background:#0b1016; border:1px solid #223046; border-radius:10px; padding:12px; max-height:210px; overflow:auto; font-size:13px; }
+    .list .item { display:flex; align-items:center; justify-content:space-between; padding:6px 8px; border-bottom:1px dashed #1e2b3c; }
+    .list .item:last-child { border-bottom:none; }
+    .kpi { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:10px; }
+    .kpi .box { background:#0b1016; border:1px solid #1e2b3c; border-radius:10px; padding:10px; text-align:center; }
+    .kpi .box .big { font-size:20px; font-weight:800; }
+    .footer { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-top:1px solid #223042; }
+    .help { color:var(--muted); font-size:12px; }
+    .toast { position:fixed; right:22px; bottom:22px; background:#0f141b; color:var(--text); border:1px solid #2a3a52; border-radius:12px; padding:14px 16px; box-shadow:0 10px 24px rgba(0,0,0,.35); display:none; }
+    .toast.ok { border-color:#1f614e; }
+    .tag { font-size:11px; padding:4px 8px; border-radius:999px; border:1px solid #2a3a52; color:#96a3b6; }
+  </style>
+</head>
+<body>
+  <div class="banner">Concept Only · Non‑Functional Prototype · No Company IP</div>
+  <div class="wrap">
+    <div class="card">
+      <div class="hdr">
+        <h1>Bulk Upload → Welcome Email Scheduler</h1>
+        <span class="pill">Setup time ↓</span>
+        <span class="pill">Consistent onboarding</span>
+        <span class="sub">Mocked UX flow for client onboarding</span>
+      </div>
+
+      <div class="body">
+        <!-- LEFT: Upload & schedule flow -->
+        <div class="panel">
+          <h2>1) Upload recipients (CSV/XLSX)</h2>
+          <div class="row">
+            <input type="file" id="file" accept=".csv,.xlsx" />
+            <button class="btn secondary" id="sample">Download sample CSV</button>
+          </div>
+          <div class="divider"></div>
+          <div class="kpi">
+            <div class="box"><div class="big" id="kpiCount">—</div><div class="muted">Rows detected</div></div>
+            <div class="box"><div class="big" id="kpiValid">—</div><div class="muted">Valid emails</div></div>
+            <div class="box"><div class="big" id="kpiDupes">—</div><div class="muted">Potential dupes</div></div>
+          </div>
+
+          <div class="divider"></div>
+          <h2>2) Welcome email dispatch</h2>
+          <div class="row">
+            <input type="checkbox" id="sendNow" checked />
+            <label for="sendNow"><b>Send welcome emails immediately</b></label>
+          </div>
+          <div class="row">
+            <input type="checkbox" id="scheduleLater" />
+            <label for="scheduleLater"><b>Schedule for later</b></label>
+          </div>
+          <div class="grid" id="scheduleFields" style="opacity:.5; pointer-events:none;">
+            <div>
+              <label class="muted">Date</label>
+              <input type="date" id="date" />
+            </div>
+            <div>
+              <label class="muted">Time</label>
+              <input type="time" id="time" />
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:14px;">
+            <input type="checkbox" id="sendTest" />
+            <label for="sendTest">Send test email to myself first</label>
+          </div>
+          <div class="row">
+            <input type="checkbox" id="throttle" />
+            <label for="throttle">Throttle to 200 emails/hour (avoid rate limits)</label>
+          </div>
+        </div>
+
+        <!-- RIGHT: Preview & QA -->
+        <div class="panel">
+          <h2>Preview & QA</h2>
+          <div class="muted">Example first three recipients from the upload (mocked)</div>
+          <div class="list" id="previewList">
+            <div class="item"><span>Avery Johnson • avery@example.com</span><span class="tag">new</span></div>
+            <div class="item"><span>Dev Patel • dev@example.com</span><span class="tag">new</span></div>
+            <div class="item"><span>Sofia Reyes • sofia@example.com</span><span class="tag">duplicate?</span></div>
+          </div>
+          <div class="divider"></div>
+          <div class="muted">Subject</div>
+          <input type="text" value="Welcome to Your Account" />
+          <div class="row" style="margin-top:8px;">
+            <button class="btn ghost" id="viewTemplate">View email template</button>
+            <button class="btn ghost" id="editVariables">Edit merge variables</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="help">No data is stored. This prototype simulates the flow only.</div>
+        <div>
+          <button class="btn secondary" id="cancel">Cancel</button>
+          <button class="btn" id="confirm">Confirm & Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const sendNow = document.getElementById('sendNow');
+    const scheduleLater = document.getElementById('scheduleLater');
+    const scheduleFields = document.getElementById('scheduleFields');
+    const toast = document.getElementById('toast');
+    const kpiCount = document.getElementById('kpiCount');
+    const kpiValid = document.getElementById('kpiValid');
+    const kpiDupes = document.getElementById('kpiDupes');
+
+    function showToast(msg, type='ok') {
+      toast.textContent = msg;
+      toast.className = 'toast ' + (type==='ok' ? 'ok' : '');
+      toast.style.display = 'block';
+      setTimeout(()=> toast.style.display='none', 2800);
+    }
+
+    function toggleScheduleFields() {
+      const enable = scheduleLater.checked;
+      scheduleFields.style.opacity = enable ? '1' : '.5';
+      scheduleFields.style.pointerEvents = enable ? 'auto' : 'none';
+      if (enable) sendNow.checked = false; // keep them mutually exclusive-ish
+    }
+
+    sendNow.addEventListener('change', () => {
+      if (sendNow.checked) scheduleLater.checked = false;
+      toggleScheduleFields();
+    });
+    scheduleLater.addEventListener('change', toggleScheduleFields);
+
+    document.getElementById('confirm').addEventListener('click', () => {
+      const mode = sendNow.checked ? 'now' : 'scheduled';
+      if (mode === 'scheduled') {
+        const d = document.getElementById('date').value;
+        const t = document.getElementById('time').value;
+        if (!d || !t) return showToast('Pick a date & time to schedule.', 'warn');
+        showToast(`Emails scheduled for ${d} at ${t} (simulated).`);
+      } else {
+        showToast('Welcome emails will be sent now (simulated).');
+      }
+    });
+
+    document.getElementById('cancel').addEventListener('click', () => {
+      showToast('Action cancelled.');
+    });
+
+    // Fake KPI updates when a file is picked
+    document.getElementById('file').addEventListener('change', (e) => {
+      // simple pseudo-randomized KPIs to make it feel alive
+      const total = Math.floor(Math.random()*400)+60; // 60-460
+      const dupes = Math.floor(total * (Math.random()*0.06));
+      const valid = total - dupes - Math.floor(Math.random()*5);
+      kpiCount.textContent = total;
+      kpiValid.textContent = Math.max(valid, 0);
+      kpiDupes.textContent = dupes;
+      showToast('File parsed. Preview refreshed.');
+    });
+
+    document.getElementById('sample').addEventListener('click', () => {
+      const csv = 'first_name,last_name,email\nAvery,Johnson,avery@example.com\nDev,Patel,dev@example.com\nSofia,Reyes,sofia@example.com';
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'sample_upload.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('viewTemplate').addEventListener('click', ()=>{
+      showToast('Template preview would open here (mock).');
+    });
+    document.getElementById('editVariables').addEventListener('click', ()=>{
+      showToast('Merge variables modal would open (mock).');
+    });
+  </script>
+</body>
+</html>
